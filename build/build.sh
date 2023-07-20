@@ -22,13 +22,13 @@ if [ $(version $PYTHON_VERSION) -ge $(version "3.9") ]; then
 fi
 if [ $(version $PYTHON_VERSION) -ge $(version "3.10") ]; then
     # DOCKER_IMAGE="public.ecr.aws/sam/build-python3.10:1.83.0"
-    DOCKER_IMAGE="public.ecr.aws/sam/build-python3.10"
+    DOCKER_IMAGE="public.ecr.aws/sam/build-python3.10:latest"
     PIP="pip3"
     DOCKER_SUFFIX="-$ARCHITECTURE"
 fi
 
 docker run -v $(pwd):/var/task ${DOCKER_IMAGE}${DOCKER_SUFFIX} \
-${PIP} install -U pip wheels setuptools && \
+${PIP} install -U pip setuptools wheel setuptools-rust && \
 ${PIP} install -r requirements.txt -t ${PKG_DIR}
 
 zip -r releases/aws-lambda-layer-${PACKAGE_VERSION}${DOCKER_SUFFIX}.zip python
