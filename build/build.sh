@@ -23,12 +23,26 @@ fi
 if [ $(version $PYTHON_VERSION) -ge $(version "3.10") ]; then
     # DOCKER_IMAGE="public.ecr.aws/sam/build-python3.10:1.83.0"
     DOCKER_IMAGE="public.ecr.aws/sam/build-python3.10:latest"
+    # DOCKER_IMAGE="public.ecr.aws/lambda/python:3.10"
     PIP="pip3"
     DOCKER_SUFFIX="-$ARCHITECTURE"
 fi
 
 docker run -v $(pwd):/var/task ${DOCKER_IMAGE}${DOCKER_SUFFIX} \
+yum install -y mysql-devel && \
 ${PIP} install -U pip setuptools wheel setuptools-rust && \
-${PIP} install -r requirements.txt -t ${PKG_DIR}
+${PIP} install \
+    --platform manylinux2014_aarch64 \
+    --target ${PKG_DIR} \
+    --implementation cp \
+    --python-version 3.10 \
+    --only-binary=:all: --upgrade \
+    -r requirements.txt
+
+# rm -rf ./python/*.dist-info
+# find ./python/ -name "tests" -type d | xargs -I{} rm -rf {}
+# find ./python/ -name "docs" -type d | xargs -I{} rm -rf {}
+# find ./python/ -name "__pycache__" -type d | xargs -I{} rm -rf {}
+# rm -rf ./python/boto*
 
 zip -r releases/aws-lambda-layer-${PACKAGE_VERSION}${DOCKER_SUFFIX}.zip python

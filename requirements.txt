@@ -4,8 +4,9 @@
 # idna; python_version>"3.6"
 # certifi; python_version>"3.6"
 # typing-extensions; python_version>"3.6"
-bcrypt
-boto3
-# pymysql
+bcrypt==4.0.1
+# boto3
+cryptography==41.0.2
 mysql-connector-python
+# pymysql
 python-dotenv
