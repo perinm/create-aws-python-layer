@@ -130,3 +130,5 @@ dmypy.json
 
 # Other
 .DS_Store
+*.zip
+releases

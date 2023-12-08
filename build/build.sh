@@ -27,17 +27,28 @@ if [ $(version $PYTHON_VERSION) -ge $(version "3.10") ]; then
     PIP="pip3"
     DOCKER_SUFFIX="-$ARCHITECTURE"
 fi
+if [ $(version $PYTHON_VERSION) -ge $(version "3.11") ]; then
+    DOCKER_IMAGE="public.ecr.aws/sam/build-python3.11:latest"
+    PIP="pip3"
+    DOCKER_SUFFIX="-$ARCHITECTURE"
+fi
+if [ $(version $PYTHON_VERSION) -ge $(version "3.12") ]; then
+    DOCKER_IMAGE="public.ecr.aws/sam/build-python3.12:latest"
+    PIP="pip3"
+    DOCKER_SUFFIX="-$ARCHITECTURE"
+fi
 
+# docker run -v $(pwd):/var/task ${DOCKER_IMAGE}${DOCKER_SUFFIX} \
+# yum install -y mysql-devel && \
 docker run -v $(pwd):/var/task ${DOCKER_IMAGE}${DOCKER_SUFFIX} \
-yum install -y mysql-devel && \
-${PIP} install -U pip setuptools wheel setuptools-rust && \
-${PIP} install \
-    --platform manylinux2014_aarch64 \
-    --target ${PKG_DIR} \
-    --implementation cp \
-    --python-version 3.10 \
-    --only-binary=:all: --upgrade \
-    -r requirements.txt
+    ${PIP} install -U pip setuptools wheel setuptools-rust && \
+    ${PIP} install \
+        --platform manylinux2014_aarch64 \
+        --target ${PKG_DIR} \
+        --implementation cp \
+        --python-version 3.10 \
+        --only-binary=:all: --upgrade \
+        -r requirements.txt
 
 # rm -rf ./python/*.dist-info
 # find ./python/ -name "tests" -type d | xargs -I{} rm -rf {}
